@@ -117,6 +117,7 @@ function CreateUser() {
         isError: false,
         isSuccess: false,
       });
+    // fetch api data from local storage instead of making api call
       const storedProfiles = localStorage.getItem(LOCAL_STORAGE_KEY);
       const data = storedProfiles ? JSON.parse(storedProfiles) : null;
       if (Array.isArray(data)) {
