@@ -1,0 +1,25 @@
+.create-form {
+  /* background-color: burlywood; */
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  row-gap: 5px;
+  padding-top: 100px;
+}
+.sbt-btn {
+  margin: 20px 0px;
+  padding: 5px 5px;
+  border: 1px solid black;
+  background-color: #cf6d43;
+  color: white;
+  border-radius: 10px;
+  width: 200px;
+  height: 33px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .sbt-btn {
+    width: 200px;
+  }
+}

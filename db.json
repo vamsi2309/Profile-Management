@@ -1,0 +1,22 @@
+{
+  "profile": [
+    {
+      "id": "1729143893834",
+      "name": "krishna",
+      "email": "krishna23@gmail.com",
+      "age": 23
+    },
+    {
+      "id": "1729143925306",
+      "name": "suresh",
+      "email": "suresh23@gmail.com",
+      "age": 45
+    },
+    {
+      "id": "1729143944581",
+      "name": "ramesh",
+      "email": "ramesh23@gmail.com",
+      "age": 45
+    }
+  ]
+}
