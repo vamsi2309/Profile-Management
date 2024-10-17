@@ -110,22 +110,36 @@ function CreateUser() {
       navigate,
     ]
   );
-  const fetchProfileData = async () => {
+  const fetchProfileData = () => {
     try {
       updateApiStatus({
         isLoading: true,
         isError: false,
         isSuccess: false,
       });
-      const response = await axios.get(`${API_BASE_URL}/${id}`);
-      const data = response.data;
-      updateProfileData(data);
-      updateApiStatus({ isLoading: false, isSuccess: true });
-      setIsProfileFetched(true);
+      const storedProfiles = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const data = storedProfiles ? JSON.parse(storedProfiles) : null;
+      if (Array.isArray(data)) {
+        const profile = data.find((profile: any) => profile.id === id);
+        if (profile) {
+          updateProfileData(profile);
+          updateApiStatus({ isLoading: false, isSuccess: true });
+          setIsProfileFetched(true);
+        } else {
+          console.error("No matching profile found.");
+          updateApiStatus({ isLoading: false, isError: true });
+          console.log(`No profile found with id: ${id}`);
+          toast.error("Profile not found.");
+        }
+      } else if (data && data.id === id) {
+        updateProfileData(data);
+        updateApiStatus({ isLoading: false, isSuccess: true });
+        setIsProfileFetched(true);
+      }
     } catch (error) {
       console.error("Error fetching profile data:", error);
       updateApiStatus({ isLoading: false, isError: true });
-      toast.error(`${error}`);
+      toast.error("An error occurred while fetching profile data.");
     }
   };
   useEffect(() => {
