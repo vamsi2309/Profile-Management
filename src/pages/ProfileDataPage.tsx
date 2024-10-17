@@ -77,7 +77,9 @@ function ProfileData() {
             try {
                 updateApiStatus({ isLoading: true, isSuccess: false });
                 const data = await fetchProfileData();
-                setProfiles(data);
+                if (Array.isArray(data)) {
+                    setProfiles(data);
+                }
                 localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
                 updateApiStatus({ isLoading: false, isSuccess: true });
             } catch (error) {
