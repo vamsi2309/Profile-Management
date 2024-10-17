@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./createUser.css";
+import Loader from "@/components/Loader";
 
 interface UserFormProps {
   profileData: {
@@ -27,6 +28,10 @@ const UserForm: React.FC<UserFormProps> = ({
     () => (profileData.id ? "Update User" : "Create User"),
     [profileData.id]
   );
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <form onSubmit={handleSubmit} className="create-form">

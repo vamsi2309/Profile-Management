@@ -1,6 +1,7 @@
 import React from "react";
 import { FaEllipsisV } from "react-icons/fa";
 import "./profiledata.css";
+import Loader from "@/components/Loader";
 
 interface Profile {
   id: number;
@@ -12,6 +13,7 @@ interface Profile {
 interface ProfileTableProps {
   profiles: Profile[];
   openMenus: { [key: number]: boolean };
+  isLoading: boolean;
   handleEdit: (id: number) => void;
   handleDelete: (id: number) => void;
   toggleMenu: (id: number) => void;
@@ -20,10 +22,15 @@ interface ProfileTableProps {
 const ProfileTable: React.FC<ProfileTableProps> = ({
   profiles,
   openMenus,
+  isLoading,
   handleEdit,
   handleDelete,
   toggleMenu,
 }) => {
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
     <table>
       <thead>
