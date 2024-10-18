@@ -6,18 +6,16 @@ import UserForm from "@/components/Form";
 import { toast } from "react-toastify";
 import React from "react";
 import API_BASE_URL from "@/config";
-import Loader from "@/components/Loader";
 
 interface UserData {
-  id: undefined | string;
+  id?: string; // Optional during updates
   name: string;
   email: string;
   age?: number;
 }
 
 function CreateUser() {
-  const { profileData, apiStatus, updateProfileData, updateApiStatus } =
-    useGlobalContext();
+  const { profileData, apiStatus, updateProfileData, updateApiStatus } = useGlobalContext();
   const [isProfileFetched, setIsProfileFetched] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
@@ -36,19 +34,21 @@ function CreateUser() {
   const onChangeHandler = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
-      if (!profileData) return;
 
       const updatedProfileData: UserData = {
-        ...profileData,
+        id: profileData?.id ?? "", // Default to an empty string if id is undefined
+        name: profileData?.name || "",
+        email: profileData?.email || "",
+        age: profileData?.age,
         [name]: name === "age" ? (value ? Number(value) : undefined) : value,
       };
 
+      console.log("Updated Profile Data:", updatedProfileData);
       updateProfileData(updatedProfileData);
       if (error) setError(null);
     },
     [profileData, error, updateProfileData]
   );
-
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -58,7 +58,7 @@ function CreateUser() {
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      if (!profileData) return;
+      if (!profileData) return; // Optionally handle this case earlier if profileData is critical
 
       if (profileData.name.trim().length < 3) {
         setError("Name is required and must be at least 3 characters.");
@@ -75,17 +75,16 @@ function CreateUser() {
       try {
         updateApiStatus({ isLoading: true, isError: false, isSuccess: false });
 
-        if (profileData.id !== undefined) {
+        if (profileData.id) {
           await axios.put(`${API_BASE_URL}/${profileData.id}`, profileData);
           updateLocalStorage([profileData]);
           toast.success("Profile updated successfully");
         } else {
-          const { id, name, email, age } = profileData;
           const newProfile: UserData = {
-            id: id ?? String(Date.now()),
-            name,
-            email,
-            age,
+            id: String(Date.now()), // Unique ID generation for new profiles
+            name: profileData.name,
+            email: profileData.email,
+            age: profileData.age,
           };
           await axios.post(`${API_BASE_URL}`, newProfile);
           updateProfileData(newProfile);
@@ -110,26 +109,28 @@ function CreateUser() {
       navigate,
     ]
   );
+
   const fetchProfileData = () => {
     try {
-      updateApiStatus({
-        isLoading: true,
-        isError: false,
-        isSuccess: false,
-      });
-    // fetch api data from local storage instead of making api call
+      updateApiStatus({ isLoading: true, isError: false, isSuccess: false });
       const storedProfiles = localStorage.getItem(LOCAL_STORAGE_KEY);
       const data = storedProfiles ? JSON.parse(storedProfiles) : null;
+
       if (Array.isArray(data)) {
         const profile = data.find((profile: any) => profile.id === id);
         if (profile) {
-          updateProfileData(profile);
+          const validProfile: UserData = {
+            id: profile.id || "", // Default to empty string if id is undefined
+            name: profile.name,
+            email: profile.email,
+            age: profile.age,
+          };
+          updateProfileData(validProfile);
           updateApiStatus({ isLoading: false, isSuccess: true });
           setIsProfileFetched(true);
         } else {
           console.error("No matching profile found.");
           updateApiStatus({ isLoading: false, isError: true });
-          console.log(`No profile found with id: ${id}`);
           toast.error("Profile not found.");
         }
       } else if (data && data.id === id) {
@@ -143,17 +144,16 @@ function CreateUser() {
       toast.error("An error occurred while fetching profile data.");
     }
   };
+
   useEffect(() => {
     if (id && !isProfileFetched) {
       fetchProfileData();
     }
-  }, [id, profileData]);
+  }, [id, isProfileFetched]);
 
   return (
     <UserForm
-      profileData={
-        profileData || { id: undefined, name: "", email: "", age: undefined }
-      }
+      profileData={profileData || { id: "", name: "", email: "", age: undefined }} // Provide a default value here too
       onChangeHandler={onChangeHandler}
       handleSubmit={handleSubmit}
       error={error}

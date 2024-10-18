@@ -7,7 +7,10 @@ npm i
 # or
 yarn install
 ```
-
+Then, run the Josn server with different port
+```bash
+json-server --watch db.json --port 3001
+```
 Then, run the development server:
 
 ```bash

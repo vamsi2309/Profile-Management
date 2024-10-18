@@ -4,13 +4,15 @@ import "react-toastify/dist/ReactToastify.css";
 import "./createUser.css";
 import Loader from "@/components/Loader";
 
+interface UserData {
+  id?: string;
+  name: string;
+  email: string;
+  age?: number;
+}
+
 interface UserFormProps {
-  profileData: {
-    id: string | undefined;
-    name: string;
-    email: string;
-    age?: number;
-  };
+  profileData: UserData;
   onChangeHandler: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   error: string | null;
@@ -25,14 +27,13 @@ const UserForm: React.FC<UserFormProps> = ({
   isLoading,
 }) => {
   const title = useMemo(
-    () => (profileData.id ? "Update User" : "Create User"),
-    [profileData.id]
+    () => (profileData?.id ? "Update User" : "Create User"),
+    [profileData?.id]
   );
 
   if (isLoading) {
     return <Loader />;
   }
-
   return (
     <form onSubmit={handleSubmit} className="create-form">
       <h4
@@ -52,7 +53,7 @@ const UserForm: React.FC<UserFormProps> = ({
         <input
           type="text"
           name="name"
-          value={profileData.name || ""}
+          value={profileData?.name}
           onChange={onChangeHandler}
           placeholder="Name"
           style={{
@@ -70,7 +71,7 @@ const UserForm: React.FC<UserFormProps> = ({
         <input
           type="email"
           name="email"
-          value={profileData.email || ""}
+          value={profileData?.email}
           onChange={onChangeHandler}
           placeholder="Email"
           style={{
@@ -88,7 +89,7 @@ const UserForm: React.FC<UserFormProps> = ({
         <input
           type="number"
           name="age"
-          value={profileData.age ?? ""}
+          value={profileData?.age}
           onChange={onChangeHandler}
           style={{
             width: "200px",

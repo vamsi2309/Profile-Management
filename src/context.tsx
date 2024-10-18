@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect, useContext } from "react";
 
 interface ProfileData {
-  id: string | undefined;
+  id?: string;
   name: string;
   email: string;
   age?: number;
@@ -32,8 +32,8 @@ const AppContext = createContext<{
     isError: false,
     isSuccess: false,
   },
-  updateProfileData: () => {},
-  updateApiStatus: () => {},
+  updateProfileData: () => { },
+  updateApiStatus: () => { },
 });
 
 const getInitialData = (): ProfileData | null => {
@@ -55,10 +55,12 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   const updateProfileData = (newData: ProfileData) => {
-    setProfileData(newData);
+    setProfileData((prevData) => ({
+      ...prevData,
+      ...newData,
+    }));
     localStorage.setItem("profileData", JSON.stringify(newData));
   };
-
   const updateApiStatus = (newStatus: Partial<ApiStatus>) => {
     setApiStatus((prevStatus) => ({ ...prevStatus, ...newStatus }));
   };
