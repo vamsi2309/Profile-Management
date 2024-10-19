@@ -1,5 +1,4 @@
 import React, { lazy, Suspense } from "react";
-import ProfileData from "@/pages/ProfileDataPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -17,16 +16,17 @@ const queryClient = new QueryClient({
 
 const Loadable =
   <P extends object>(Component: React.ComponentType<P>) =>
-  (props: P) => {
-    return (
-      <Suspense fallback={<Loader />}>
-        <Component {...props} />
-      </Suspense>
-    );
-  };
+    (props: P) => {
+      return (
+        <Suspense fallback={<Loader />}>
+          <Component {...props} />
+        </Suspense>
+      );
+    };
 
 const DemoPage = Loadable(lazy(() => import("@/pages/demo")));
 const CreateUserPage = Loadable(lazy(() => import("@/pages/CreateUserPage")));
+const ProfileData = Loadable(lazy(() => import('@/pages/ProfileDataPage')))
 
 const router = createBrowserRouter([
   {
