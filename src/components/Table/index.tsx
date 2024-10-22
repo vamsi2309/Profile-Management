@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import { FaEllipsisV } from "react-icons/fa";
 import "./profiledata.css";
 import Loader from "@/components/Loader";
+import ProfileRow from "./profileRow";
 
 interface Profile {
   id: number;
@@ -11,7 +12,7 @@ interface Profile {
 }
 
 interface ProfileTableProps {
-  profiles: Profile[];
+  profiles: Profile[] | Profile;
   openMenus: { [key: number]: boolean };
   isLoading: boolean;
   handleEdit: (id: number) => void;
@@ -19,6 +20,7 @@ interface ProfileTableProps {
   toggleMenu: (id: number) => void;
 }
 
+// Memoize individual profile rows for optimization
 const ProfileTable: React.FC<ProfileTableProps> = ({
   profiles,
   openMenus,
@@ -31,6 +33,32 @@ const ProfileTable: React.FC<ProfileTableProps> = ({
     return <Loader />;
   }
 
+  // Use memoization for the rendering of profile rows
+  const renderProfiles = useMemo(() => {
+    if (!Array.isArray(profiles) && profiles !== null) {
+      return (
+        <ProfileRow
+          profile={profiles}
+          openMenus={openMenus}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+          toggleMenu={toggleMenu}
+        />
+      );
+    }
+
+    return (profiles as Profile[]).map((profile) => (
+      <ProfileRow
+        key={profile.id}
+        profile={profile}
+        openMenus={openMenus}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+        toggleMenu={toggleMenu}
+      />
+    ));
+  }, [profiles, openMenus, handleEdit, handleDelete, toggleMenu]);
+
   return (
     <table>
       <thead>
@@ -42,43 +70,10 @@ const ProfileTable: React.FC<ProfileTableProps> = ({
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody>
-        {profiles.map((profile) => (
-          <tr key={profile.id}>
-            <td data-label="ID">{profile.id}</td>
-            <td data-label="Name">{profile.name}</td>
-            <td data-label="Email">{profile.email}</td>
-            <td data-label="Age">
-              {profile.age !== undefined ? profile.age : "N/A"}
-            </td>
-            <td data-label="Actions">
-              <div className="actions-container">
-                <button
-                  className="ellipsis-button"
-                  onClick={() => toggleMenu(profile.id)}
-                >
-                  <FaEllipsisV />
-                </button>
-                {openMenus[profile.id] && (
-                  <div className="actions-menu">
-                    <button onClick={() => handleEdit(profile.id)}>
-                      Edit Profile
-                    </button>
-                    <button
-                      className="delete"
-                      onClick={() => handleDelete(profile.id)}
-                    >
-                      Delete Profile
-                    </button>
-                  </div>
-                )}
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
+      <tbody>{renderProfiles}</tbody>
     </table>
   );
 };
 
-export default ProfileTable;
+
+export default React.memo(ProfileTable);

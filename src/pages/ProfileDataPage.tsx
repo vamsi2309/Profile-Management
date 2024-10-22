@@ -33,7 +33,11 @@ const fetchProfileData = async () => {
 function ProfileData() {
     const { apiStatus, updateApiStatus } = useGlobalContext();
     const [openMenus, setOpenMenus] = useState<{ [key: number]: boolean }>({});
-    const [profiles, setProfiles] = useState<Profile[]>([]);
+    const [profiles, setProfiles] = useState<Profile[]>(() => {
+        const storedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+        return storedData ? JSON.parse(storedData) : [];
+    });
+
     const navigate = useNavigate();
 
     const handleDelete = useCallback(
